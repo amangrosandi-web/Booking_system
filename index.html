@@ -236,30 +236,30 @@
                 <div class="text-center mb-6">
                     <h3 class="text-xl font-black uppercase italic">Form Pengajuan</h3>
                 </div>
-                <form onsubmit="createNewBooking(event)" class="space-y-4">
+                <form  class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="inp-unit" placeholder="Unit Kerja / Instansi" required class="w-full p-4 bg-slate-50 rounded-xl border-2 border-transparent focus:border-blue-500 outline-none font-bold uppercase">
-                        <input type="tel" id="inp-phone" placeholder="No. Telp / WA Pengaju" required class="w-full p-4 bg-slate-50 rounded-xl border-2 border-transparent focus:border-blue-500 outline-none font-bold">
+                        <input type="text" id="inp-unit"name="unit" placeholder="Unit Kerja / Instansi" required class="w-full p-4 bg-slate-50 rounded-xl border-2 border-transparent focus:border-blue-500 outline-none font-bold uppercase">
+                        <input type="tel" id="inp-phone"name="telp" placeholder="No. Telp / WA Pengaju" required class="w-full p-4 bg-slate-50 rounded-xl border-2 border-transparent focus:border-blue-500 outline-none font-bold">
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-1">
                             <label class="text-[9px] font-black uppercase text-slate-400 ml-1">Lokasi Kampus</label>
-                            <select id="inp-loc" onchange="updateVehicleOptions()" class="w-full p-4 bg-slate-50 rounded-xl font-bold border-2 border-transparent focus:border-blue-500">
+                            <select id="inp-loc"name="lokasi" onchange="updateVehicleOptions()" class="w-full p-4 bg-slate-50 rounded-xl font-bold border-2 border-transparent focus:border-blue-500">
                                 <option value="Ganesa">ITB Ganesa</option>
                                 <option value="Jatinangor">ITB Jatinangor</option>
                             </select>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[9px] font-black uppercase text-slate-400 ml-1">Pilih Jenis & Nomor Armada</label>
-                            <select id="inp-vehicle" class="w-full p-4 bg-slate-50 rounded-xl font-bold border-2 border-transparent focus:border-blue-500"></select>
+                            <select id="inp-vehicle"name="armada" class="w-full p-4 bg-slate-50 rounded-xl font-bold border-2 border-transparent focus:border-blue-500"></select>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input type="date" id="inp-date" required class="w-full p-4 bg-slate-50 rounded-xl font-bold border-2 border-transparent focus:border-blue-500">
-                        <input type="time" id="inp-start" required class="w-full p-4 bg-slate-50 rounded-xl font-bold border-2 border-transparent focus:border-blue-500">
-                        <input type="time" id="inp-end" required class="w-full p-4 bg-slate-50 rounded-xl font-bold border-2 border-transparent focus:border-blue-500">
+                        <input type="date" id="inp-date"name="tanggal" required class="w-full p-4 bg-slate-50 rounded-xl font-bold border-2 border-transparent focus:border-blue-500">
+                        <input type="time" id="inp-start"name="jam_mulai" required class="w-full p-4 bg-slate-50 rounded-xl font-bold border-2 border-transparent focus:border-blue-500">
+                        <input type="time" id="inp-end"name="jam_selesai" required class="w-full p-4 bg-slate-50 rounded-xl font-bold border-2 border-transparent focus:border-blue-500">
                     </div>
-                    <textarea id="inp-desc" placeholder="Tujuan & Detail Keperluan..." required class="w-full p-4 bg-slate-50 rounded-xl border-2 border-transparent focus:border-blue-500 outline-none font-bold min-h-[100px]"></textarea>
+                    <textarea id="inp-desc"name="keterangan" placeholder="Tujuan & Detail Keperluan..." required class="w-full p-4 bg-slate-50 rounded-xl border-2 border-transparent focus:border-blue-500 outline-none font-bold min-h-[100px]"></textarea>
                     <button type="submit" class="w-full py-5 bg-slate-900 text-white rounded-xl font-black uppercase tracking-[0.2em] shadow-xl hover:bg-slate-800 transition-all">Kirim Pengajuan</button>
                 </form>
             </div>
@@ -623,5 +623,33 @@
             setTimeout(() => t.classList.add('hidden'), 3000);
         }
     </script>
+<script>
+  // Link Google Sheets kamu
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbxUgF2eG0cQfiT7yXEyglfLYhzSfBDGWef5epdd4o2q6z5cx1k6ZbmSArH0WYYTw-BO/exec'
+  const form = document.querySelector('form')
+
+  form.addEventListener('submit', e => {
+    e.preventDefault()
+    
+    // Memberitahu pengguna data sedang dikirim
+    const btn = form.querySelector('button[type="submit"]')
+    btn.innerHTML = "Sedang Mengirim..."
+    btn.disabled = true
+
+    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+      .then(response => {
+        alert("Booking Berhasil Terkirim ke Google Sheets!")
+        btn.innerHTML = "Kirim"
+        btn.disabled = false
+        form.reset() // Mengosongkan form kembali
+      })
+      .catch(error => {
+        console.error('Error!', error.message)
+        alert("Gagal mengirim, periksa koneksi internet!")
+        btn.innerHTML = "Kirim"
+        btn.disabled = false
+      })
+  })
+</script>
 </body>
 </html>
