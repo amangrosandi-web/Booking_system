@@ -646,50 +646,77 @@
         alert("Gagal mengirim, periksa koneksi internet!")
         btn.innerHTML = "Kirim"
         btn.disabled = false
-      })
-  })
+       form.addEventListener('submit', e => {
+    e.preventDefault()
+    
+    const btn = form.querySelector('button[type="submit"]')
+    btn.innerHTML = "SEDANG MENGIRIM..."
+    btn.disabled = true
+
+    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+      .then(response => {
+        alert("BOOKING BERHASIL! Data sudah masuk ke sistem.")
+        btn.innerHTML = "BOOKING SEKARANG"
+        btn.disabled = false
+        form.reset()
+                  muatData(); 
+    })
+    .catch(error => {
+      alert("Gagal mengirim! Periksa koneksi internet.");
+      btn.innerHTML = "BOOKING SEKARANG";
+      btn.disabled = false;
+    });
+});
 </script>
+
 <script>
-  // Link Jembatan Google Sheets Anda
+  // LINK JEMBATAN GOOGLE SHEETS ANDA
   const urlSheets = "https://google.com";
 
-  // Fungsi untuk menarik data dari Google Sheets
   async function muatData() {
     try {
       const respon = await fetch(urlSheets);
       const data = await respon.json();
-      
-      // Cari tempat tabel (Pastikan Anda sudah memberi id="tabel-booking" pada <tbody> tabel Anda)
       const tabel = document.getElementById('tabel-booking');
+      
       if (tabel) {
-        tabel.innerHTML = ""; // Bersihkan data lama
+        tabel.innerHTML = ""; 
 
-        data.reverse().forEach(row => { // reverse agar data terbaru di atas
+        // Menampilkan data terbaru di posisi paling atas
+        data.reverse().forEach(row => { 
           tabel.innerHTML += `
-            <tr class="border-b hover:bg-gray-50">
-              <td class="px-4 py-3 text-sm">${new Date(row.timestamp).toLocaleString('id-ID')}</td>
-              <td class="px-4 py-3 text-sm font-medium">${row.unit}</td>
-              <td class="px-4 py-3 text-sm">
-                <span class="px-2 py-1 rounded-full text-xs font-semibold ${row.status === 'Menunggu' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+            <tr class="border-b hover:bg-slate-50 transition duration-200">
+              <td class="px-4 py-4 text-[11px] text-slate-500 font-bold">${new Date(row.timestamp).toLocaleString('id-ID')}</td>
+              <td class="px-4 py-4 text-sm font-black uppercase text-slate-800">${row.unit}</td>
+              <td class="px-4 py-4 text-sm">
+                <span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase shadow-sm ${
+                  row.status === 'Menunggu' ? 'bg-yellow-400 text-yellow-900' : 
+                  row.status === 'Berangkat' ? 'bg-green-600 text-white' : 
+                  'bg-slate-200 text-slate-600'
+                }">
                   ${row.status}
                 </span>
               </td>
-              <td class="px-4 py-3 text-sm text-gray-600">${row.lokasi}</td>
+              <td class="px-4 py-4 text-sm text-slate-600 italic font-bold">${row.lokasi}</td>
             </tr>
           `;
         });
       }
     } catch (error) {
-      console.log("Gagal memuat data:", error);
+      console.log("Dashboard sedang sinkronisasi...");
     }
   }
 
-  // Jalankan fungsi otomatis saat halaman dibuka
+  // Jalankan saat website pertama kali dibuka
   muatData();
   
-  // Refresh otomatis setiap 30 detik agar dashboard selalu update
+  // Dashboard update otomatis tiap 30 detik tanpa refresh
   setInterval(muatData, 30000);
 </script>
 
 </body>
 </html>
+
+
+
+
