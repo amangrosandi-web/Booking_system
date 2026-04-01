@@ -202,12 +202,9 @@
                                 <td class="sub-header border-r border-slate-200">Pemadam Jatinangor</td>
                             </tr>
                         </thead>
-                        <tbody id="grid-body"></tbody>
+                        <tbody id="tabel-booking"></tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-
         <!-- OPERASIONAL -->
         <div id="view-manage" class="hidden">
             <!-- Maintenance Overlay -->
@@ -652,5 +649,47 @@
       })
   })
 </script>
+<script>
+  // Link Jembatan Google Sheets Anda
+  const urlSheets = "https://google.com";
+
+  // Fungsi untuk menarik data dari Google Sheets
+  async function muatData() {
+    try {
+      const respon = await fetch(urlSheets);
+      const data = await respon.json();
+      
+      // Cari tempat tabel (Pastikan Anda sudah memberi id="tabel-booking" pada <tbody> tabel Anda)
+      const tabel = document.getElementById('tabel-booking');
+      if (tabel) {
+        tabel.innerHTML = ""; // Bersihkan data lama
+
+        data.reverse().forEach(row => { // reverse agar data terbaru di atas
+          tabel.innerHTML += `
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-4 py-3 text-sm">${new Date(row.timestamp).toLocaleString('id-ID')}</td>
+              <td class="px-4 py-3 text-sm font-medium">${row.unit}</td>
+              <td class="px-4 py-3 text-sm">
+                <span class="px-2 py-1 rounded-full text-xs font-semibold ${row.status === 'Menunggu' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                  ${row.status}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-600">${row.lokasi}</td>
+            </tr>
+          `;
+        });
+      }
+    } catch (error) {
+      console.log("Gagal memuat data:", error);
+    }
+  }
+
+  // Jalankan fungsi otomatis saat halaman dibuka
+  muatData();
+  
+  // Refresh otomatis setiap 30 detik agar dashboard selalu update
+  setInterval(muatData, 30000);
+</script>
+
 </body>
 </html>
